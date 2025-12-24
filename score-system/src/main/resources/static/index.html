@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息管理系统导航页</title>
+    <!-- 引入Bootstrap样式，让页面更美观 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 自定义样式，让导航卡片更美观 */
+        .nav-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- 页面标题 -->
+        <div class="text-center mb-5">
+            <h1>信息管理系统</h1>
+            <p class="text-muted">请选择您要进入的管理模块</p>
+        </div>
+
+        <!-- 导航卡片区域 -->
+        <div class="row justify-content-center gap-4">
+            <!-- 学生信息管理卡片 -->
+            <div class="col-md-5">
+                <a href="student.html" class="text-decoration-none">
+                    <div class="card nav-card text-center p-5 bg-primary text-white">
+                        <div class="card-body">
+                            <h2 class="card-title">学生信息管理</h2>
+                            <p class="card-text mt-3">点击进入学生信息的新增、查询、修改等操作</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 成绩信息管理卡片 -->
+            <div class="col-md-5">
+                <a href="score.html" class="text-decoration-none">
+                    <div class="card nav-card text-center p-5 bg-success text-white">
+                        <div class="card-body">
+                            <h2 class="card-title">成绩信息管理</h2>
+                            <p class="card-text mt-3">点击进入成绩信息的新增、查询、修改等操作</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入Bootstrap的JS（可选，仅用于增强交互） -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

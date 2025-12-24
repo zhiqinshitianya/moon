@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>学生信息管理</title>
+    <!-- 引入Bootstrap样式（确保加载成功） -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>学生信息管理</h2>
+
+    <!-- 新增学生表单 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">新增学生</h5>
+            <form id="studentForm">
+                <div class="mb-3">
+                    <label class="form-label">学号</label>
+                    <input type="text" class="form-control" id="studentId" placeholder="请输入学号" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">姓名</label>
+                    <input type="text" class="form-control" id="studentName" placeholder="请输入姓名" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">性别</label>
+                    <input type="text" class="form-control" id="gender" placeholder="男/女" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">班级</label>
+                    <input type="text" class="form-control" id="clazz" placeholder="请输入班级" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="addStudent()">新增学生</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 查询区域 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">查询学生</h5>
+            <div class="mb-3">
+                <input type="text" id="queryId" class="form-control w-25 d-inline" placeholder="输入学号查询">
+                <button class="btn btn-success ms-2" onclick="queryStudent()">查询</button>
+                <button class="btn btn-info ms-2" onclick="getAllStudents()">显示所有学生</button>
+            </div>
+            <!-- 查询结果展示 -->
+            <div id="resultArea" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 引入jQuery（确保AJAX能正常使用） -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+    // 新增学生方法
+    function addStudent() {
+        // 获取表单输入值
+        let studentId = $("#studentId").val();
+        let studentName = $("#studentName").val();
+        let gender = $("#gender").val();
+        let clazz = $("#clazz").val();
+
+        // 非空校验
+        if (!studentId || !studentName || !gender || !clazz) {
+            alert("请填写所有字段！");
+            return;
+        }
+
+        // 构造请求数据
+        let student = {
+            studentId: studentId,
+            studentName: studentName,
+            gender: gender,
+            clazz: clazz
+        };
+
+        /*
+            下方url出现问题：1. 本地文件打开前端会受浏览器限制，访问不了http的资源
+                            2. 使用vsCode的live server 插件打开后，url会定位到 http://127.0.0.1:5500//student/add 而导致定位不了后端接口
+                            3. 添加后端完整url前缀 http:localhost:8080 后即可解决
+                            4. 还有，此时会出现“跨域问题”，需要在后端配置注解或新建配置类解决（已经通过注解解决）
+                            注解： @CrossOrigin(origins = "http://127.0.0.1:5500", maxAge = 3600)  添加到controller层每一个类前
+        */
+        // 发送AJAX请求
+        $.ajax({
+            // url: "/student/add",
+            url: "http://localhost:8080/student/add",
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify(student),
+            success: function (res) {
+                alert(res); // 弹出后端返回的结果
+                // 清空表单
+                $("#studentForm")[0].reset();
+                // 刷新列表
+                getAllStudents();
+            },
+            error: function (xhr) {
+                alert("新增失败！错误信息：" + xhr.responseText);
+            }
+        });
+    }
+
+    // 根据学号查询学生
+    function queryStudent() {
+        let studentId = $("#queryId").val();
+        if (!studentId) {
+            alert("请输入学号！");
+            return;
+        }
+
+        $.ajax({
+            //url: "/student/query",
+            url:"http://localhost:8080/student/query",
+            type: "GET",
+            data: {studentId: studentId},
+            success: function (res) {
+                if (res) {
+                    let html = `<table class="table table-bordered">
+                                    <tr><th>学号</th><th>姓名</th><th>性别</th><th>班级</th></tr>
+                                    <tr>
+                                        <td>${res.studentId}</td>
+                                        <td>${res.studentName}</td>
+                                        <td>${res.gender}</td>
+                                        <td>${res.clazz}</td>
+                                    </tr>
+                                </table>`;
+                    $("#resultArea").html(html);
+                } else {
+                    $("#resultArea").html("<p class='text-danger'>未查询到该学生！</p>");
+                }
+            },
+            error: function () {
+                alert("查询失败！");
+            }
+        });
+    }
+
+    // 查询所有学生
+    function getAllStudents() {
+        $.ajax({
+            //url: "/student/list",
+            url:"http://localhost:8080/student/list",
+            type: "GET",
+            success: function (res) {
+                if (res.length > 0) {
+                    let html = `<table class="table table-bordered">
+                                    <tr><th>学号</th><th>姓名</th><th>性别</th><th>班级</th></tr>`;
+                    res.forEach(function (stu) {
+                        html += `<tr>
+                                    <td>${stu.studentId}</td>
+                                    <td>${stu.studentName}</td>
+                                    <td>${stu.gender}</td>
+                                    <td>${stu.clazz}</td>
+                                </tr>`;
+                    });
+                    html += `</table>`;
+                    $("#resultArea").html(html);
+                } else {
+                    $("#resultArea").html("<p class='text-muted'>暂无学生数据！</p>");
+                }
+            },
+            error: function () {
+                alert("查询所有学生失败！");
+            }
+        });
+    }
+</script>
+</body>
+</html>
