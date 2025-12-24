@@ -1,0 +1,3 @@
+先安装MySQL，确保自己的8080端口没有被占用
+然后在ScoreSystemApplication运行
+然后在浏览器输入http://localhost:8080即可
